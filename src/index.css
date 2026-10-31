@@ -1,0 +1,669 @@
+@import 'tailwindcss';
+@import '@fontsource/syncopate/latin-400.css';
+@import '@fontsource/syncopate/latin-700.css';
+@import '@fontsource/saira/latin-400.css';
+@import '@fontsource/saira/latin-500.css';
+@import '@fontsource/saira/latin-600.css';
+
+@theme {
+  --color-void: #03070d;
+  --color-deep: #071a2b;
+  --color-cyan: #35e4ff;
+  --color-core: #eafcff;
+  --color-ember: #ff8a1f;
+  --color-ice: #c9e8f0;
+  --color-muted: #6e95a8;
+
+  --font-display: 'Syncopate', 'Michroma', ui-sans-serif, sans-serif;
+  --font-sans: 'Saira', 'Chakra Petch', ui-sans-serif, sans-serif;
+}
+
+:root {
+  --color-void: #03070d;
+  --color-deep: #071a2b;
+  --color-cyan: #35e4ff;
+  --color-core: #eafcff;
+  --color-ember: #ff8a1f;
+  --color-ice: #c9e8f0;
+  --color-muted: #6e95a8;
+
+  color-scheme: dark;
+  background-color: var(--color-void);
+  color: var(--color-ice);
+  font-family: var(--font-sans);
+}
+
+/* Global resets conforming to DESIGN.md */
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-void);
+  color: var(--color-ice);
+  font-family: var(--font-sans);
+  line-height: 1.55;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Smooth section navigation (appbar links in Read view) */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Hide the native PAGE scrollbar (Read view draws a floating overlay thumb
+   instead, so the bar never consumes layout width). Dialog scrollbars keep
+   the Tron styling below. */
+html {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+/* Same treatment for inner scroll containers (e.g. terminal dialogs),
+   which draw a floating overlay thumb instead */
+.hide-native-scrollbar {
+  scrollbar-width: none;
+}
+
+.hide-native-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Tron scrollbars for inner scroll regions (ride view terminal dialogs etc.) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(53 228 255 / 0.4) rgb(3 7 13 / 0.85);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(3 7 13 / 0.85);
+  border-left: 1px solid rgb(53 228 255 / 0.12);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(53 228 255 / 0.4);
+  border: 1px solid rgb(53 228 255 / 0.55);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-cyan);
+  box-shadow: 0 0 8px rgb(53 228 255 / 0.6);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Focus ring: 2px ember, 3px offset, always visible, on every interactive element.
+   .no-focus-ring opts out non-interactive containers (e.g. modal scroll regions). */
+:focus-visible:not(.no-focus-ring) {
+  outline: 2px solid var(--color-ember) !important;
+  outline-offset: 3px !important;
+}
+
+/* Headings glow */
+.heading-glow {
+  text-shadow: 0 0 6px rgb(53 228 255 / 0.55);
+}
+
+/* Tron Chamfered Panel */
+/* 10px chamfer on two opposite corners (top-right and bottom-left).
+   Universal: the two chamfered cuts are ALWAYS stroked — clip-path clips the
+   box border at the diagonals, so restore it with a 1px band painted on a
+   10x10 corner square and masked to hug the inside of the cut. The mask's
+   outer edge is the same diagonal as the clip, so the stroke lands exactly on
+   the cut and stays as crisp as the straight border segments.
+   Requires the element to be positioned (relative/absolute/fixed). */
+.tron-panel-clip {
+  clip-path: polygon(
+    0 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% 100%,
+    10px 100%,
+    0 calc(100% - 10px)
+  );
+}
+
+/* Top-right cut: diagonal from (100% - 10px, 0) to (100%, 10px) */
+.tron-panel-clip::before,
+.tron-panel-clip::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--chamfer-edge, rgb(53 228 255 / 0.5));
+  pointer-events: none;
+}
+
+.tron-panel-clip::before {
+  top: 0;
+  right: 0;
+  -webkit-mask-image: linear-gradient(225deg, #000 50%, transparent calc(50% + 1px));
+  mask-image: linear-gradient(225deg, #000 50%, transparent calc(50% + 1px));
+}
+
+/* Bottom-left cut: diagonal from (0, 100% - 10px) to (10px, 100%) */
+.tron-panel-clip::after {
+  bottom: 0;
+  left: 0;
+  -webkit-mask-image: linear-gradient(45deg, #000 50%, transparent calc(50% + 1px));
+  mask-image: linear-gradient(45deg, #000 50%, transparent calc(50% + 1px));
+}
+
+/* Ride view: hide the idle mouse cursor after 3s without movement.
+   !important + descendants so HUD cursors (grab, pointer, zoom) hide too. */
+.ride-cursor-idle,
+.ride-cursor-idle * {
+  cursor: none !important;
+}
+
+/* Ride view: brief zoom cursor feedback while wheel-zooming the camera.
+   Unlayered so they outrank Tailwind's cursor utilities on the same element. */
+.ride-zooming-in {
+  cursor: zoom-in;
+}
+
+.ride-zooming-out {
+  cursor: zoom-out;
+}
+
+/* Brighter variants for frames whose border is stronger than the default */
+.chamfer-edge-strong {
+  --chamfer-edge: rgb(53 228 255 / 0.65);
+}
+
+.chamfer-edge-strong:hover {
+  --chamfer-edge: var(--color-cyan);
+}
+
+.chamfer-edge-ember {
+  --chamfer-edge: rgb(255 138 31 / 0.6);
+}
+
+/* Phone frames (project thumbnails & screenshot viewer): the one place the
+   design allows rounded corners — opt out of the global square-corner reset */
+.phone-screen {
+  border-radius: 14px !important;
+  overflow: hidden;
+}
+
+.phone-screen img,
+img.phone-screen {
+  border-radius: 12px !important;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Web screenshot layers (project card deck): slightly tighter radius than
+   phone screens — website shots read better with less rounding. */
+.web-screen {
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+/* Image sits flush under the chrome strip: square top corners, rounded only
+   at the bottom (container overflow clips the rest) */
+.web-screen img {
+  border-radius: 0 0 7px 7px !important;
+}
+
+@media (max-width: 639px) {
+  .web-screen {
+    border-radius: 4px !important;
+  }
+
+  .web-screen img {
+    border-radius: 0 0 3px 3px !important;
+  }
+}
+
+/* Mobile: big radii read as blobs at phone sizes — keep a hint of roundness.
+   Card thumbnail frames only; the fullscreen dialog (img.phone-screen) keeps
+   the desktop radius. */
+@media (max-width: 639px) {
+  .phone-screen {
+    border-radius: 5px !important;
+  }
+
+  .phone-screen img {
+    border-radius: 3px !important;
+  }
+}
+
+.tron-panel-border {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid rgb(53 228 255 / 0.4);
+  box-shadow: 0 0 18px rgb(53 228 255 / 0.15);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% 100%,
+    10px 100%,
+    0 calc(100% - 10px)
+  );
+}
+
+/* Unchamfered corner ticks (top-left and bottom-right): 2px segments, 14px long */
+.corner-tick-tl {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  border-top: 2px solid var(--tick-color, var(--color-cyan));
+  border-left: 2px solid var(--tick-color, var(--color-cyan));
+}
+
+.corner-tick-br {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  border-bottom: 2px solid var(--tick-color, var(--color-cyan));
+  border-right: 2px solid var(--tick-color, var(--color-cyan));
+}
+
+/* Grid Battle ember chrome: chamfer clip stroke + corner ticks in one class */
+.tron-ember {
+  --tick-color: var(--color-ember);
+  --chamfer-edge: rgb(255 138 31 / 0.5);
+}
+
+/* Circular joystick pad: the ring IS the boost boundary (rim-exit boost —
+   finger past the circle in the top half ignites). Needs !important to beat
+   the global square-everything radius reset above. */
+.joystick-pad-round {
+  border-radius: 9999px !important;
+}
+
+/* Booster pickup gain blip on the fuel gauge: quiet float-and-fade */
+@keyframes booster-gain {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+.booster-gain {
+  animation: booster-gain 1.4s ease-out forwards;
+}
+
+/* Scored a point (foe bounced off your ribbon): the YOU digit flashes
+   white-hot and pops once — quiet, no layout shift, no sound */
+@keyframes score-pop {
+  0% {
+    transform: scale(1);
+    color: inherit;
+  }
+  25% {
+    transform: scale(1.45);
+    color: #eafcff;
+  }
+  100% {
+    transform: scale(1);
+    color: inherit;
+  }
+}
+.score-pop {
+  animation: score-pop 0.7s ease-out;
+  display: inline-block;
+}
+
+/* Auto-dismiss toast drain: the bar at the toast's bottom edge empties over
+   the toast's lifetime (width 100% → 0), then the toast clears itself.
+   Duration is set inline to match each toast's timeout. */
+@keyframes toast-drain {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+.toast-drain {
+  animation: toast-drain linear forwards;
+}
+
+/* Battle event-log rows (BattleLog): a row grows in from zero height, so the
+   rows above it are pushed UP smoothly by pure layout; at 3.7s it
+   collapse-fades, and the store removes the node at ~4.1s (never a jump).
+   32px headroom covers the tallest row. */
+@keyframes battle-log-in {
+  from {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    max-height: 32px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes battle-log-out {
+  from {
+    max-height: 32px;
+    opacity: 1;
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
+  }
+}
+.battle-log-row {
+  overflow: hidden;
+  animation:
+    battle-log-in 0.2s ease-out both,
+    battle-log-out 0.3s ease-in 3.7s forwards;
+}
+
+/* Chip chamfer (for tags or small chips) */
+.tron-chip {
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  border: 1px solid rgb(53 228 255 / 0.3);
+}
+
+/* Simple view perspective grid floor — two stacked fixed layers:
+   .simple-grid-lines holds ONLY the canvas (src/simple/GridFloor.tsx): the
+   lines are projected per-line and painted once, with the bottom→top fade
+   BAKED into the draw (no CSS mask on the canvas — parent-mask-over-child-
+   canvas compositing is unreliable on some mobile engines, and the old
+   pseudo-element pattern never needed it).
+   .simple-grid-floor renders ONLY the two light-sweep pseudo-elements below
+   (additively blended over the canvas). */
+.simple-grid-lines {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 45vh;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.simple-grid-lines canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.simple-grid-floor {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 45vh;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+  /* Additive: the sweeps below ADD light to what the canvas already drew —
+     the grid lines they cross glow brighter, the void between them gets only
+     a faint fill. Normal alpha compositing would veil the lines instead. */
+  mix-blend-mode: screen;
+}
+
+/* Power sweeps: bands of light travelling up the grid PLANE (same
+   perspective transform as the lines), so each one crosses every horizontal
+   line in sequence, compressing toward the horizon exactly like the grid
+   does — and dissolving into the haze before it.
+   Realism rules, learned from the fake-feeling single "breathing" band:
+   - ASYMMETRY: a sharp white-hot crest on the LEADING edge (the element's
+     bottom — the band travels up, so a floor point meets the bottom edge
+     first) with a long soft wake trailing above it, not a symmetric
+     sandwich.
+   - IRREGULAR RHYTHM: two sweeps at different periods (11s / 17s) and
+     phases, so passes interleave and occasionally reinforce instead of
+     ticking like a metronome.
+   - Soft ignition (gentle ease at the start); the perspective itself
+     decelerates the band toward the horizon (screen speed falls with the
+     projection factor squared). */
+.simple-grid-floor::before,
+.simple-grid-floor::after {
+  content: '';
+  position: absolute;
+  left: -50%;
+  right: -50%;
+  bottom: 0;
+  height: 240px;
+  transform-origin: bottom center;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* Primary sweep: white-hot crest (doctrine: white-hot core, cyan halo),
+   cyan wake fading over ~3/4 of the band. */
+.simple-grid-floor::before {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgb(53 228 255 / 0.015) 45%,
+    rgb(53 228 255 / 0.05) 70%,
+    rgb(53 228 255 / 0.11) 86%,
+    rgb(214 246 255 / 0.16) 95%,
+    rgb(53 228 255 / 0.05) 99.5%,
+    transparent
+  );
+  animation: grid-sweep-a 11s cubic-bezier(0.3, 0, 0.55, 1) infinite;
+}
+
+/* Secondary sweep: softer, wider, slower, out of phase — mostly a faint
+   companion, occasionally overlapping the primary into a brighter pass. */
+.simple-grid-floor::after {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgb(53 228 255 / 0.02) 55%,
+    rgb(53 228 255 / 0.05) 87%,
+    rgb(53 228 255 / 0.02) 100%
+  );
+  animation: grid-sweep-b 17s cubic-bezier(0.3, 0, 0.55, 1) -8s infinite;
+}
+
+/* Plane-space travel: 240px below the floor -> 4680px up the plane maps to
+   off-screen -> ~195px up the screen (the grid's vanishing line at
+   300/tan(55deg) = 210px). Opacity envelopes fade each sweep in at the
+   viewer's feet and out into the haze before the horizon. */
+/* Overlay scrollbar thumb, compositor-driven: the thumb's position maps to
+   the page scroll position through a scroll() timeline, so it tracks flings
+   at display framerate even when the main thread is busy (JS-updated thumbs
+   step on fast mobile scrolls). --thumb-travel is set from JS whenever the
+   geometry changes. Browsers without scroll-driven animations keep the JS
+   update path in OverlayScrollbar. */
+@keyframes overlay-thumb-y {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(var(--thumb-travel, 0px));
+  }
+}
+
+.overlay-thumb-auto {
+  animation: overlay-thumb-y linear both;
+  animation-timeline: scroll(nearest);
+}
+
+@keyframes grid-sweep-a {
+  0% {
+    transform: perspective(300px) rotateX(55deg) translateY(240px);
+    opacity: 0;
+  }
+  9% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    transform: perspective(300px) rotateX(55deg) translateY(-4680px);
+    opacity: 0;
+  }
+}
+
+@keyframes grid-sweep-b {
+  0% {
+    transform: perspective(300px) rotateX(55deg) translateY(240px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.55;
+  }
+  60% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: perspective(300px) rotateX(55deg) translateY(-4680px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .simple-grid-floor::before,
+  .simple-grid-floor::after {
+    animation: none;
+    display: none;
+  }
+  .neon-flicker,
+  .neon-spark {
+    animation: none;
+  }
+  .neon-spark {
+    display: none;
+  }
+}
+
+/* Broken-neon view toggle (Read mode): irregular power dips + tiny sparks
+   that fly off the button. Sparks are 3 identical dots; nth-child staggers
+   their direction/delay so they never sync into a metronome. */
+.neon-flicker {
+  animation: neon-flicker 5.5s linear infinite;
+}
+
+@keyframes neon-flicker {
+  0%,
+  2.5%,
+  4%,
+  9%,
+  42%,
+  47%,
+  49.5%,
+  52%,
+  82%,
+  84%,
+  100% {
+    opacity: 1;
+  }
+  1.5% {
+    opacity: 0.45;
+  }
+  3.2% {
+    opacity: 0.7;
+  }
+  5% {
+    opacity: 0.35;
+  }
+  45% {
+    opacity: 0.5;
+  }
+  48% {
+    opacity: 0.85;
+  }
+  50.5% {
+    opacity: 0.4;
+  }
+  83% {
+    opacity: 0.6;
+  }
+}
+
+.neon-spark {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #eafcff;
+  box-shadow:
+    0 0 4px 1px #35e4ff,
+    0 0 8px 2px rgba(53, 228, 255, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  animation: neon-spark 5.5s ease-out infinite;
+}
+
+@keyframes neon-spark {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(1);
+  }
+  0.4% {
+    opacity: 1;
+  }
+  5% {
+    opacity: 0;
+    transform: translate(var(--sx, 10px), var(--sy, -9px)) scale(0.3);
+  }
+}
+
+i.neon-spark:nth-of-type(1) {
+  top: -1px;
+  left: 20%;
+  --sx: 12px;
+  --sy: -10px;
+  animation-delay: 0.15s;
+}
+
+i.neon-spark:nth-of-type(2) {
+  bottom: -1px;
+  left: 55%;
+  --sx: 9px;
+  --sy: 9px;
+  animation-delay: 2.5s;
+}
+
+i.neon-spark:nth-of-type(3) {
+  top: 30%;
+  right: -1px;
+  --sx: 13px;
+  --sy: -5px;
+  animation-delay: 4.55s;
+}
+
+/* No content-visibility on .station-section: placeholder heights made every
+   below-fold anchor jump land thousands of px off (browser scrolls to phantom
+   coordinates, then real layout shifts and cancels the tween). The page is
+   light DOM with lazy images — rendering it whole is free, and the scrollbar
+   stays honest. */

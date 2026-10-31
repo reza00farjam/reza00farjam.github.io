@@ -1,0 +1,23 @@
+# TRON: Legacy Light Cycle & Rider Materials
+
+newmtl mtl_bike
+Ka 0.1 0.1 0.1
+Kd 1.0 1.0 1.0
+Ks 0.9 0.9 0.9
+Ns 100.0
+map_Kd ../3d_textures_png/LightCycleSam_color_BLUE_dark_73.png
+
+newmtl mtl_rider
+Ka 0.1 0.1 0.1
+Kd 1.0 1.0 1.0
+Ks 0.6 0.6 0.6
+Ns 40.0
+map_Kd ../3d_textures_png/sam_color_BLUE_dark_46.png
+map_Bump ../3d_textures_png/sam_normals_02_js_165.png
+
+newmtl mtl_disc
+Ka 0.1 0.1 0.1
+Kd 1.0 1.0 1.0
+Ks 0.8 0.8 0.8
+Ns 80.0
+map_Kd ../3d_textures_png/disc_color_sam_blueDark_36.png

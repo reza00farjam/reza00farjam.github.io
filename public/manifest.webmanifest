@@ -1,0 +1,29 @@
+{
+  "name": "Reza Farjam | Portfolio",
+  "short_name": "Reza Farjam",
+  "description": "Frontend engineer building web and cross-platform applications with Angular and Flutter. A Tron: Legacy inspired interactive portfolio.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#03070d",
+  "theme_color": "#03070d",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
