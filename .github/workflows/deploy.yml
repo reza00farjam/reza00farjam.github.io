@@ -23,9 +23,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-      # dist/ is committed in this repo — publish it directly
+      # docs/ is committed in this repo — publish it directly
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: docs
       - id: deployment
         uses: actions/deploy-pages@v4
