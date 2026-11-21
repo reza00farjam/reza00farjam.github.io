@@ -20,6 +20,7 @@ import {
   PREDICT_MAX_DT,
   normalizeBattleCode,
   isRibbonCrash,
+  ribbonClosingFraction,
 } from './battle'
 import { ARENA_HALF_SIZE as HALF, isInsideAlley } from './arena'
 import { CycleState, resolveBikeContact } from './cyclePhysics'
@@ -474,20 +475,37 @@ describe('remote pose prediction (dead reckoning)', () => {
   })
 })
 
-describe('isRibbonCrash (gate = DRIVE SPEED above normal max, never vn)', () => {
+describe('isRibbonCrash (gate = DRIVE SPEED above normal max AND closing on the wall)', () => {
   it('max-cruise and below never derezz — even when wall-birth overlap reads |vn| = full |v|', () => {
     // 2026-11-18 playtest: overtake pass laid ribbon onto a cruising foe —
     // slip/shove pushed the VECTOR past 26 while the drive scalar stayed 26
     expect(isRibbonCrash(26)).toBe(false)
     expect(isRibbonCrash(10)).toBe(false)
+    expect(isRibbonCrash(26, 1)).toBe(false)
   })
 
-  it('any speed above normal derezzes — including the post-boost-release glide', () => {
+  it('any speed above normal derezzes when closing — including the post-boost-release glide', () => {
     // Reza: a last-moment boost release must NOT dodge the crash — the speed
     // glides down past 26 and stays lethal until it lands
     expect(isRibbonCrash(26.1)).toBe(true)
     expect(isRibbonCrash(35)).toBe(true)
     expect(isRibbonCrash(40)).toBe(true)
+    expect(isRibbonCrash(27.5, 0.7)).toBe(true)
+    expect(isRibbonCrash(40, 0.5)).toBe(true)
+  })
+
+  it('a >26 contact while travelling ALONG the wall only scrapes (2026-11-21 false derezzes)', () => {
+    // Iran/VPN playtest: post-boost glide beside an own ribbon, a curl
+    // tightening under the capsule, a dt-spike frame landing on a wall — all
+    // closing-angle grazes nobody could see. They bounce + score now.
+    expect(isRibbonCrash(40, 0)).toBe(false)
+    expect(isRibbonCrash(35, 0.2)).toBe(false) // ~12° graze
+    expect(isRibbonCrash(40, 0.49)).toBe(false) // just under the floor
+  })
+
+  it('ribbonClosingFraction: vn over travel, zero travel reads 0 (bounce)', () => {
+    expect(ribbonClosingFraction(20, 40)).toBeCloseTo(0.5)
+    expect(ribbonClosingFraction(20, 0)).toBe(0)
   })
 })
 

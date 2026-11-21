@@ -14,19 +14,36 @@ export const BOOST_REENGAGE_FRAC = 0.2 // empty meter locks boost until refilled
 // contact speed derezzes.
 export const BATTLE_CRASH_SPEED = 26
 
-// Ribbon-crash gate, shared by all three call sites (own walls + foe walls in
-// Trail, owner probe in RideScene): crash ⟺ the contactor's DRIVE SPEED — the
-// gauge scalar, which GLIDES down past 26 for a while after boost release —
-// is above normal max while touching a ribbon. Never gate on the into-wall
-// component vn: when a wall is BORN inside the capsule (overtake pass laying
-// ribbon onto a foe) the push normal points along travel, so |vn| reads the
-// full velocity VECTOR, which drift slip and bike-shove kicks push past 26 at
-// plain cruise — that derezzed a cruising foe on a shallow overtake birth
-// (2026-11-18 playtest) instead of bouncing + scoring. The scalar is the
-// rider's own speed truth: boosting = 40, gliding after release = 40→26, so
-// a last-moment boost release does NOT dodge the crash.
-export function isRibbonCrash(driveSpeed: number): boolean {
-  return driveSpeed > BATTLE_CRASH_SPEED
+// 2026-11-21 (Iran/VPN playtest — repeated false "own ribbon" derezzes nobody
+// could see): speed ALONE made every >26 contact a crash, including grazes
+// where the rider was travelling ALONG the wall — the post-boost-release
+// glide (drive scalar still 40→26) drifting beside an own ribbon, a curl
+// tightening under the capsule, or a dt-spike frame (VPN jitter) landing the
+// capsule ON a wall for a single frame. A derezz now additionally requires
+// CLOSING: vn must be at least half the rider's travel speed (≥ ~30°
+// approach). vn may only NARROW the crash (AND-condition) — never replace the
+// speed gate: when a wall is BORN inside the capsule (overtake pass) the push
+// normal points along travel, so |vn| reads the full velocity VECTOR, which
+// drift slip and bike-shove kicks push past 26 at plain cruise — vn as THE
+// gate derezzed a cruising foe on a shallow overtake birth (2026-11-18).
+export const RIBBON_CRASH_MIN_CLOSING = 0.5
+
+/** Ribbon-crash gate, shared by all three call sites (own walls + foe walls
+    in Trail, owner probe in RideScene): crash ⟺ the contactor's DRIVE SPEED —
+    the gauge scalar, which GLIDES down past 26 for a while after boost
+    release — is above normal max while touching a ribbon AND the rider is
+    closing on the wall (vn ≥ RIBBON_CRASH_MIN_CLOSING × travel speed). A
+    last-moment boost release still cannot dodge a real hit; riding ALONG a
+    ribbon at >26 now only scrapes it. closingFraction defaults to 1 for
+    callers without a normal in hand. */
+export function isRibbonCrash(driveSpeed: number, closingFraction = 1): boolean {
+  return driveSpeed > BATTLE_CRASH_SPEED && closingFraction >= RIBBON_CRASH_MIN_CLOSING
+}
+
+/** vn / travel speed — the closing fraction isRibbonCrash takes. travel ≈ 0
+    (a >26 drive scalar with no real velocity — shove kicks) reads 0: bounce. */
+export function ribbonClosingFraction(intoWallSpeed: number, travelSpeed: number): number {
+  return travelSpeed > 1e-3 ? intoWallSpeed / travelSpeed : 0
 }
 export const HIT_DEBOUNCE = 0.75 // s between scored trail hits — one per contact episode
 export const BATTLE_DURATION = 240 // s (4 min)

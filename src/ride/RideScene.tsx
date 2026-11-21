@@ -18,6 +18,7 @@ import {
   STALL_SPEED,
   STALL_WARN_S,
   isRibbonCrash,
+  ribbonClosingFraction,
   stepDriftHeat,
   stepFuel,
   stepStall,
@@ -253,10 +254,15 @@ const PhysicsLoop: React.FC<{
               }
             })
             // Gate on the foe's SYNCED drive scalar (glides down past 26 after
-            // boost release — a last-moment release never dodges the crash);
-            // probeVn only signals "touching" — normals lie on wall-birth
-            // overlaps (see isRibbonCrash)
-            if (probeVn > 0 && isRibbonCrash(r.speed)) forceFoeCrash(r.x, r.z)
+            // boost release — a last-moment release never dodges the crash)
+            // AND closing on the wall — the dead-reckoned pose under VPN
+            // jitter can SLIDE along a wall extrapolated past a turn; that is
+            // a bounce, not a derezz (see isRibbonCrash)
+            if (
+              probeVn > 0 &&
+              isRibbonCrash(r.speed, ribbonClosingFraction(probeVn, foeProbe.speed))
+            )
+              forceFoeCrash(r.x, r.z)
             else if (probeVn > 0) reportFoeWallTouch(probeVn, foeProbe.x - r.x, foeProbe.z - r.z)
           }
         }

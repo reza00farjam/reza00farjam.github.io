@@ -4,7 +4,7 @@ import { useFrame } from '@react-three/fiber'
 import { CycleInputs, CycleState, resolveTrailWalls } from '../lib/cyclePhysics'
 import { trailTopLeanOffset } from '../lib/track'
 import { soundEngine } from '../lib/soundEngine'
-import { isRibbonCrash, ribbonCrashFrozen } from '../lib/battle'
+import { isRibbonCrash, ribbonClosingFraction, ribbonCrashFrozen } from '../lib/battle'
 import { battleRuntime } from '../lib/battleStore'
 
 interface TrailProps {
@@ -446,9 +446,14 @@ export const Trail: React.FC<TrailProps> = ({
         soundEngine.playWallImpact(s)
         // Battle: own walls are lethal too — a fast hit is a crash either way.
         // The gate is the bike's DRIVE SPEED (glides down past 26 after boost
-        // release), never the impact component s — normals lie when a wall is
-        // born inside the capsule (see isRibbonCrash)
-        if (isBattle && isRibbonCrash(cycle.speed)) onCrash?.(cycle.x, cycle.z, 'own')
+        // release) AND actually closing on the wall (vn ≥ half of travel —
+        // gliding ALONG a ribbon at >26 is a scrape/bounce, not a derezz:
+        // 2026-11-21 false "own ribbon" crashes). The impact component only
+        // narrows the crash, never replaces the speed gate — normals lie when
+        // a wall is born inside the capsule (see isRibbonCrash)
+        const travel = Math.hypot(cycle.vx ?? 0, cycle.vz ?? 0)
+        if (isBattle && isRibbonCrash(cycle.speed, ribbonClosingFraction(s, travel)))
+          onCrash?.(cycle.x, cycle.z, 'own')
       })
       if (foeRibbonsRef) {
         resolveTrailWalls(cycle, foeRibbonsRef.current, rearX, rearZ, (s) => {
@@ -456,7 +461,9 @@ export const Trail: React.FC<TrailProps> = ({
           // Bounces stay LOCAL PHYSICS ONLY (push-out + sound); the SCORE for
           // touching the foe's wall is owner-authoritative — the foe's probe
           // against their real ribbons decides it (battleNet.reportFoeWallTouch)
-          if (isRibbonCrash(cycle.speed)) onCrash?.(cycle.x, cycle.z, 'foe')
+          const travel = Math.hypot(cycle.vx ?? 0, cycle.vz ?? 0)
+          if (isRibbonCrash(cycle.speed, ribbonClosingFraction(s, travel)))
+            onCrash?.(cycle.x, cycle.z, 'foe')
         })
       }
     }
