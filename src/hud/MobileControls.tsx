@@ -146,7 +146,7 @@ const JoystickPad: React.FC<{
       ref={padRef}
       aria-label="Movement Joystick"
       // circular pad: the ring itself is the boost boundary (rim-exit boost)
-      className={`joystick-pad-round relative w-[136px] h-[136px] bg-deep/70 border ${accent} touch-none pointer-events-auto select-none cursor-pointer`}
+      className={`joystick-pad-round relative w-[150px] h-[150px] bg-deep/70 border ${accent} touch-none pointer-events-auto select-none cursor-pointer`}
       onPointerDown={(e) => {
         e.preventDefault()
         activePointerRef.current = e.pointerId
