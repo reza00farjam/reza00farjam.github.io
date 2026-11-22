@@ -157,7 +157,7 @@ export const Radar: React.FC<RadarProps> = ({
     <div
       aria-label="Grid Arena Radar"
       className={`group relative ${
-        isMobile ? 'w-[110px] h-[110px]' : 'w-[150px] h-[150px]'
+        isMobile ? 'w-[112px] h-[112px]' : 'w-[150px] h-[150px]'
       } bg-deep/25 border border-cyan/40 shadow-[0_0_15px_rgba(53,228,255,0.15)] backdrop-blur-md tron-panel-clip select-none pointer-events-auto cursor-default transition-[background-color] duration-200 hover:bg-deep/85 ${className}`}
     >
       <span className="corner-tick-tl" aria-hidden="true" />

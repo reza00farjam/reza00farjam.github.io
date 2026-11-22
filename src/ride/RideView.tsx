@@ -824,8 +824,8 @@ export const RideView: React.FC<{ active?: boolean }> = ({ active = true }) => {
       )}
 
       {/* Radar Minimap — bottom-left on desktop; top-RIGHT on tablet/mobile so
-          it sits far from the left-thumb steering joystick. Fades out inside
-          the battle alley (the toggles row slides up into its place). Under
+          it sits far from the left-thumb steering joystick. Fades out inside the
+          battle alley (the toggles row slides up into its place). Under
           the cold-entry veil: present but dimmed + inert, like the shortcuts */}
       <div
         className={`fixed z-30 pointer-events-auto ${isMobile ? 'top-4 right-4' : 'bottom-6 left-6'} transition-opacity duration-300 ${
@@ -851,7 +851,7 @@ export const RideView: React.FC<{ active?: boolean }> = ({ active = true }) => {
           slides up into the radar's spot when it fades out in the battle alley */}
       {isMobile && (
         <div
-          className={`fixed ${inAlley ? 'top-4' : 'top-[134px]'} right-4 z-30 pointer-events-auto flex flex-row items-center justify-end gap-2 transition-[top] duration-300 ease-in-out`}
+          className={`fixed ${inAlley ? 'top-4' : 'top-[136px]'} right-4 z-30 pointer-events-auto flex flex-row items-center justify-end gap-2 transition-[top] duration-300 ease-in-out`}
         >
           {battlePhase === 'waiting' && <HelpToggle onOpen={() => setHelpOpen(true)} />}
           <AudioToggle />
